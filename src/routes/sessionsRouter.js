@@ -1,7 +1,7 @@
 import { Router } from 'express';
 export const router=Router();
 import { SessionsManagerMONGO as SessionsManager } from '../dao/sessionsManagerMONGO.js';
-import { hashPassword } from '../utils.js';
+import { hashPassword,validatePassword } from '../utils.js';
 import { CartManagerMONGO as CartManager } from '../dao/cartManagerMONGO.js';
 import { authUserIsLogged } from '../middleware/auth.js';
 
@@ -42,6 +42,7 @@ router.post('/registro',authUserIsLogged,async(req,res)=>{
         })
     }
 
+    // este no sufre ningun cambio con el hasheo de crypto hacia bcrypt (pero login si)
     password = hashPassword(password)
 
     try{
@@ -101,31 +102,34 @@ router.post('/login',authUserIsLogged,async(req,res)=>{
             rol:'admin',
             cart: 'No Aplica'
         }
-        const emailIsValid = await sessionsManager.getUserByFilter({email})
-        if(!emailIsValid && email !== userIsManager.email){
+       // const emailIsValid = await sessionsManager.getUserByFilter({email})
+        const userIsValid = await sessionsManager.getUserByFilter({email})
+        if(!userIsValid && email !== userIsManager.email){
             return res.status(404).json({
                 error:`Error: email not found`,
                 message: `Failed to complete login. The email provided (email:${email} was not found in our database. Please verify and try again`
             })
         }
 
-        let userIsValid;
+        if(!validatePassword(password,userIsValid.password)){
+            return res.status(401).json({
+                error:`Failed to complete login: Invalid credentials`,
+                message: `The password you provided does not match our records. Please verify and try again.`
+            })
+        }
+        //este proceso se ve alterado por la migracion de hasheo de crypto a bcrypt pq aqui estoy solo hasheando el password q me da el user para compararlo con el password hasheado q me llega de DB... pero debido a los saltos aleatorios es ono funcionará con bcrypt .. entonces toca implementar el validaPassword 
+        let authenticatedUser;
         if(email === userIsManager.email && password === userIsManager.password){
-            userIsValid = userIsManager
+            authenticatedUser = userIsManager
         }else{
-            userIsValid = await sessionsManager.getUserByFilter({email, password: hashPassword(password)})
-            if(!userIsValid){
-                return res.status(401).json({
-                    error:`Failed to complete login: Invalid credentials`,
-                    message: `The password you provided does not match our records. Please verify and try again.`
-                })
-            }
+           // authenticatedUser = await sessionsManager.getUserByFilter({email, password: hashPassword(password)})
+            authenticatedUser = userIsValid
         }
  
-        userIsValid = {...userIsValid}
-        delete userIsValid.password
+        authenticatedUser = {...authenticatedUser}
+        delete authenticatedUser.password
 
-        req.session.user=userIsValid
+        req.session.user=authenticatedUser
 
         if(web){
             return res.status(301).redirect('/products')
@@ -135,10 +139,10 @@ router.post('/login',authUserIsLogged,async(req,res)=>{
             status: 'success',
             message: 'User login was completed successfully',
             payload: {
-                nombre: userIsValid.nombre,
-                email: userIsValid.email,
-                rol:userIsValid.rol,
-                carrito:userIsValid.cart
+                nombre: authenticatedUser.nombre,
+                email: authenticatedUser.email,
+                rol:authenticatedUser.rol,
+                carrito:authenticatedUser.cart
             }
         })      
     } catch (error) {
