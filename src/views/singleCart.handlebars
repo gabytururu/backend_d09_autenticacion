@@ -1,0 +1,25 @@
+{{>menuLoggedUser}}
+<div class="mainContainer">
+    <div class="titles">
+        <h1>Detalles de tu Carrito</h1>
+    </div>
+</div>
+<div class="productsContainer">       
+    <div class="productsList">
+        <div class="productCard">
+            <h2>El Carrito: {{matchingCart._id}}</h2>
+            <div class="resultsliContainer">
+                {{#each matchingCart.products}}
+                    <p><strong>{{pid.title}}</strong></p>
+                    <p>{{pid.description}}</p>
+                    <p><strong>Price:</strong> {{pid.price}}</p>
+                    <p><strong>Code:</strong> {{pid.code}}</p>
+                    <p><strong>Category:</strong> {{pid.category}}</p>
+                    <p><strong>Stock:</strong> {{pid.stock}}</p>
+                    <p><strong>Quantity:</strong> {{qty}}</p>
+                    <hr class="line"> 
+                {{/each}}
+            </div>
+        </div>
+    </div>
+</div>

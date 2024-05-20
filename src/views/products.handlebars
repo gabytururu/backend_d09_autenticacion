@@ -1,0 +1,55 @@
+{{>menuLoggedUser}}
+<div class="mainContainer">
+    <div class="titles">
+        <h1>Bienvenid@ a la Tienda {{userProfile.nombre}}</h1>
+        <div class="profile">
+            <p>Usuario: {{userProfile.nombre}}</p>
+            <p>email: {{userProfile.email}}</p>
+            <p>Rol: {{userProfile.rol}}</p>
+            <p> Id# de tu Carrito: {{userProfile.cart}}</p>
+            {{#if userProfile.isUser}}
+                <a href="/carts/{{userProfile.cart}}" class="userCarts" id="userCart" data-user-cid="{{userProfile.cart}}">Ver tu Carrito</a>
+            {{/if}}
+             {{#if userProfile.isAdmin}}
+                <a href="/carts" class="userCarts" id="allCarts">Ver todos los Carritos</a>
+            {{/if}}
+           
+        </div>
+         
+    </div>   
+    <div class="productsContainer">
+        <div class="productsPageNav">
+            <a href="/products?pagina=1" class="href navLink">Primera Pag.</a>
+            {{#if hasPrevPage}}
+                <a href="/products?pagina={{prevPage}}" class="href navLink">Pag.Anterior</a>
+            {{/if}}
+            {{#if hasNextPage}}
+                <a href="/products?pagina={{nextPage}}" class="href navLink">Pag. Siguiente</a>
+            {{/if}}        
+            <a href="/products?pagina={{totalPages}}" class="href navLink">Última Pag.</a>
+        </div>       
+        <h3>Productos Disponibles:</h3>
+        <div class="productsList">
+                {{#each products}}
+                    <div class="productCard">
+                        <div class="resultsliContainer">
+                            <p><strong>{{title}}</strong></p>
+                            <p><small>{{_id}}:</small></p>
+                            <div><img src='{{thumbnails}}' width="150px"/></div>
+                            <p>{{description}}</p>
+                            <p><strong>Precio:</strong> ${{price}}</p>
+                        </div>
+                        <div class="buybuttonContainer">
+                                <button class="checkDetails" onClick="checkProductDetails('{{_id}}')">Ver Detalles</button>
+                                <button class="buyButton" onClick="addProdToCart('{{_id}}')">comprar</button>                    
+                        </div>
+                    </div>
+                {{/each}}
+
+        </div>    
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/js/products.js"></script>
+
+
