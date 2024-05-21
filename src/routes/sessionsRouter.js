@@ -90,82 +90,107 @@ router.post('/registro',passport.authenticate("registro",{failureMessage:true,fa
     return res.status(201).json({mensaje:'Registro OK', newUser: req.user})
 })
 
-router.post('/login',authUserIsLogged,async(req,res)=>{
-    let {email,password,web}=req.body
-    res.setHeader('Content-type', 'application/json');
+//router.post('/login',authUserIsLogged,async(req,res)=>{
+router.post('/login',passport.authenticate("login",{failureMessage:true,failureRedirect:"/api/sessions/error"}),async(req,res)=>{
+    // let {email,password,web}=req.body
+    // res.setHeader('Content-type', 'application/json');
 
-    if(!email || !password){        
-        return res.status(400).json({
-            error:`Error: Failed to complete login due to missing information`,
-            message: `Please make sure all mandatory fields(*)are completed to proceed with signup.`
-        })
-    }
+    // if(!email || !password){        
+    //     return res.status(400).json({
+    //         error:`Error: Failed to complete login due to missing information`,
+    //         message: `Please make sure all mandatory fields(*)are completed to proceed with signup.`
+    //     })
+    // }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if(!emailRegex.test(email)){
-        return res.status(400).json({
-            error:`Failed to complete login due to invalid email`,
-            message: ` The email ${email} does not match a valid email format. Other types of data structures are not accepted as an email address. Please verify and try again`
-        })
-    }
+    // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // if(!emailRegex.test(email)){
+    //     return res.status(400).json({
+    //         error:`Failed to complete login due to invalid email`,
+    //         message: ` The email ${email} does not match a valid email format. Other types of data structures are not accepted as an email address. Please verify and try again`
+    //     })
+    // }
   
-    try {
-        const userIsManager={
-            nombre:'Manager Session',
-            email:'adminCoder@coder.com',
-            password:'adminCod3r123',
-            rol:'admin',
-            cart: 'No Aplica'
-        }
-       // const emailIsValid = await sessionsManager.getUserByFilter({email})
-        const userIsValid = await sessionsManager.getUserByFilter({email})
-        if(!userIsValid && email !== userIsManager.email){
-            return res.status(404).json({
-                error:`Error: email not found`,
-                message: `Failed to complete login. The email provided (email:${email} was not found in our database. Please verify and try again`
-            })
-        }
+    // try {
+    //     const userIsManager={
+    //         nombre:'Manager Session',
+    //         email:'adminCoder@coder.com',
+    //         password:'adminCod3r123',
+    //         rol:'admin',
+    //         cart: 'No Aplica'
+    //     }
+    //    // const emailIsValid = await sessionsManager.getUserByFilter({email})
+    //     const userIsValid = await sessionsManager.getUserByFilter({email})
+    //     if(!userIsValid && email !== userIsManager.email){
+    //         return res.status(404).json({
+    //             error:`Error: email not found`,
+    //             message: `Failed to complete login. The email provided (email:${email} was not found in our database. Please verify and try again`
+    //         })
+    //     }
 
-        if(!validatePassword(password,userIsValid.password)){
-            return res.status(401).json({
-                error:`Failed to complete login: Invalid credentials`,
-                message: `The password you provided does not match our records. Please verify and try again.`
-            })
-        }
-        //este proceso se ve alterado por la migracion de hasheo de crypto a bcrypt pq aqui estoy solo hasheando el password q me da el user para compararlo con el password hasheado q me llega de DB... pero debido a los saltos aleatorios es ono funcionará con bcrypt .. entonces toca implementar el validaPassword 
-        let authenticatedUser;
-        if(email === userIsManager.email && password === userIsManager.password){
-            authenticatedUser = userIsManager
-        }else{
-           // authenticatedUser = await sessionsManager.getUserByFilter({email, password: hashPassword(password)})
-            authenticatedUser = userIsValid
-        }
+    //     if(!validatePassword(password,userIsValid.password)){
+    //         return res.status(401).json({
+    //             error:`Failed to complete login: Invalid credentials`,
+    //             message: `The password you provided does not match our records. Please verify and try again.`
+    //         })
+    //     }
+    //     //este proceso se ve alterado por la migracion de hasheo de crypto a bcrypt pq aqui estoy solo hasheando el password q me da el user para compararlo con el password hasheado q me llega de DB... pero debido a los saltos aleatorios es ono funcionará con bcrypt .. entonces toca implementar el validaPassword 
+    //     let authenticatedUser;
+    //     if(email === userIsManager.email && password === userIsManager.password){
+    //         authenticatedUser = userIsManager
+    //     }else{
+    //        // authenticatedUser = await sessionsManager.getUserByFilter({email, password: hashPassword(password)})
+    //         authenticatedUser = userIsValid
+    //     }
  
-        authenticatedUser = {...authenticatedUser}
-        delete authenticatedUser.password
+    //     authenticatedUser = {...authenticatedUser}
+    //     delete authenticatedUser.password
 
-        req.session.user=authenticatedUser
+    //     req.session.user=authenticatedUser
 
-        if(web){
-            return res.status(301).redirect('/products')
-        }
+    //     if(web){
+    //         return res.status(301).redirect('/products')
+    //     }
 
-        return res.status(200).json({
-            status: 'success',
-            message: 'User login was completed successfully',
-            payload: {
-                nombre: authenticatedUser.nombre,
-                email: authenticatedUser.email,
-                rol:authenticatedUser.rol,
-                carrito:authenticatedUser.cart
-            }
-        })      
-    } catch (error) {
-        return res.status(500).json({
-            error:`Error 500 Server failed unexpectedly, please try again later`,
-            message: `${error.message}`
-        })
+    //     return res.status(200).json({
+    //         status: 'success',
+    //         message: 'User login was completed successfully',
+    //         payload: {
+    //             nombre: authenticatedUser.nombre,
+    //             email: authenticatedUser.email,
+    //             rol:authenticatedUser.rol,
+    //             carrito:authenticatedUser.cart
+    //         }
+    //     })      
+    // } catch (error) {
+    //     return res.status(500).json({
+    //         error:`Error 500 Server failed unexpectedly, please try again later`,
+    //         message: `${error.message}`
+    //     })
+    // }
+
+    // el middleware passport al final lo que me envia es un req.user que entonces puede servir para las ultimas validaciones acá (como la eliminacion del password previo envio a frontend y eso) -- esa logica debe permanecer viviendo aca, pero antes se hacia con el user resultante del req.body... yahora se hara con el req.user que genera el middleware al terminar 
+
+    let {web} = req.body
+
+    let authenticatedUser ={...req.user}
+    delete authenticatedUser.password
+    req.session.user = authenticatedUser    
+    
+    if(web){
+        return res.status(301).redirect('/products')
     }
+    res.setHeader('Content-type', 'application/json');
+    return res.status(200).json({
+        status: 'success',
+        message: 'User login was completed successfully',
+        payload: {
+            nombre: authenticatedUser.nombre,
+            email: authenticatedUser.email,
+            rol:authenticatedUser.rol,
+            carrito:authenticatedUser.cart
+        }
+    })      
+
 })
 
 router.get('/logout', async(req,res)=>{
