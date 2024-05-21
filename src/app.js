@@ -12,6 +12,8 @@ import { Server } from 'socket.io';
 import __dirname from './utils.js';
 import {generateDynamicSessionSecret} from './utils.js'
 import MongoStore from 'connect-mongo';
+import passport from 'passport'
+import { initPassport } from './config/passport.config.js'; // esta es la funcion q genero en passport.config.js
 
 const PORT = 8080;
 const app = express();
@@ -29,6 +31,11 @@ app.use(sessions({
         collectionName:'browserSessions'
     })
 })) 
+
+///siempre despues de la definicion de las sesiones!!! enchufo las funciones y middlewares the passport
+initPassport()
+app.use(passport.initialize())
+app.use(passport.session()) //solo si estoy ocupando sessions
 
 app.engine('handlebars', engine());
 app.set('view engine', 'handlebars');
