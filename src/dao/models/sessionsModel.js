@@ -19,7 +19,7 @@ const sessionsSchema = new mongoose.Schema(
             ref:"carts"
         }
     },
-    {timestamps:true}
+    {timestamps:true, strict:false}
 )
 
 export const sessionsModel = mongoose.model(
