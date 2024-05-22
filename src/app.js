@@ -27,17 +27,16 @@ app.use(sessions({
     saveUninitialized: true,
     store:MongoStore.create({
         ttl:3600,
-        // mongoUrl: "mongodb+srv://gabriela:wO2Mjvm7zojeyD7T@cluster0testgaby.l3ofz0y.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0TestGaby",
         mongoUrl: process.env.MONGO_URL,
         dbName:'ecommerce',
         collectionName:'browserSessions'
     })
 })) 
 
-///siempre despues de la definicion de las sesiones!!! enchufo las funciones y middlewares the passport
+
 initPassport()
 app.use(passport.initialize())
-app.use(passport.session()) //solo si estoy ocupando sessions
+app.use(passport.session())
 
 app.engine('handlebars', engine());
 app.set('view engine', 'handlebars');
@@ -58,13 +57,11 @@ const server= app.listen(PORT, ()=>{
 const dbConnection = async()=>{
     try{
         await mongoose.connect(
-            // "mongodb+srv://gabriela:wO2Mjvm7zojeyD7T@cluster0testgaby.l3ofz0y.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0TestGaby",
             process.env.MONGO_URL,
             {
                 dbName: "ecommerce"
             }
         )
-
         console.log('DB Conectada en puerto 8080 - ecommerce...!')
     }catch(err){
         console.log('error al connectarse con la DB via puerto 8080:', err.message)

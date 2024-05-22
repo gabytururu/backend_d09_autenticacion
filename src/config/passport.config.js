@@ -59,22 +59,12 @@ export const initPassport=()=>{
                 usernameField: "email",
             },
             async(username,password,done)=>{
-                try {                  
-                  
+                try {                 
                     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                     if(!emailRegex.test(username)){
                         console.log(`The email ${username} does not match a valid email format. Other types of data structures are not accepted as an email address. Please verify and try again`)
                         done(null,false)
                     }
-
-                    // const userIsManager={
-                    //     _id:'isAdmin',
-                    //     nombre:'Manager Session',
-                    //     email:'adminCoder@coder.com',
-                    //     password:'adminCod3r123',
-                    //     rol:'admin',
-                    //     cart: 'No Aplica'
-                    // }
 
                     if(username=="adminCoder@coder.com" && password=="adminCod3r123"){
                         const userIsManager={
@@ -86,10 +76,8 @@ export const initPassport=()=>{
                         }
                         return done(null, userIsManager)
                     }
-
                     
                     const userIsValid = await sessionsManager.getUserByFilter({email:username})
-                   // if(!userIsValid && username !== userIsManager.email){
                     if(!userIsValid){
                         console.log(`Failed to complete login. The email provided (email:${username} was not found in our database. Please verify and try again`)
                         return done(null,false)
@@ -99,13 +87,7 @@ export const initPassport=()=>{
                             console.log( `The password you provided does not match our records. Please verify and try again.`)
                             return done(null,false)
                     }                
-                    
-                    // let authenticatedUser;
-                    // if(username === userIsManager.email && password === userIsManager.password){
-                    //     authenticatedUser = userIsManager
-                    // }else{
-                    //     authenticatedUser = userIsValid
-                    // }        
+                
                     return done(null,userIsValid)
                 } catch (error) {
                     return done(error)
@@ -142,7 +124,8 @@ export const initPassport=()=>{
         )
     )
 
-    // serializer + deserializer for apps w sessions
+
+    // ------------- serializer + deserializer for apps w sessions ---------//
     passport.serializeUser((user, done)=>{
         return done(null,user._id)
     })
