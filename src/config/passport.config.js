@@ -67,33 +67,46 @@ export const initPassport=()=>{
                         done(null,false)
                     }
 
-                    const userIsManager={
-                        nombre:'Manager Session',
-                        email:'adminCoder@coder.com',
-                        password:'adminCod3r123',
-                        rol:'admin',
-                        cart: 'No Aplica'
+                    // const userIsManager={
+                    //     _id:'isAdmin',
+                    //     nombre:'Manager Session',
+                    //     email:'adminCoder@coder.com',
+                    //     password:'adminCod3r123',
+                    //     rol:'admin',
+                    //     cart: 'No Aplica'
+                    // }
+
+                    if(username=="adminCoder@coder.com" && password=="adminCod3r123"){
+                        const userIsManager={
+                            _id:'adminId',
+                            nombre:'Manager Session',
+                            email:username,
+                            rol:'admin',
+                            cart: 'No Aplica'
+                        }
+                        return done(null, userIsManager)
                     }
+
                     
                     const userIsValid = await sessionsManager.getUserByFilter({email:username})
-                    if(!userIsValid && username !== userIsManager.email){
+                   // if(!userIsValid && username !== userIsManager.email){
+                    if(!userIsValid){
                         console.log(`Failed to complete login. The email provided (email:${username} was not found in our database. Please verify and try again`)
                         return done(null,false)
                     }
-                
+                        
                     if(!validatePassword(password,userIsValid.password)){
-                        console.log( `The password you provided does not match our records. Please verify and try again.`)
-                        return done(null,false)
-                    }
+                            console.log( `The password you provided does not match our records. Please verify and try again.`)
+                            return done(null,false)
+                    }                
                     
-                    let authenticatedUser;
-                    if(username === userIsManager.email && password === userIsManager.password){
-                        authenticatedUser = userIsManager
-                    }else{
-                        authenticatedUser = userIsValid
-                    }
-        
-                    return done(null,authenticatedUser)
+                    // let authenticatedUser;
+                    // if(username === userIsManager.email && password === userIsManager.password){
+                    //     authenticatedUser = userIsManager
+                    // }else{
+                    //     authenticatedUser = userIsValid
+                    // }        
+                    return done(null,userIsValid)
                 } catch (error) {
                     return done(error)
                 }
@@ -119,8 +132,7 @@ export const initPassport=()=>{
                         const newCart= await cartManager.createCart()
                         authenticatedUser=await sessionsManager.createUser({
                             nombre,email,cart:newCart._id,profile
-                        })
-        
+                        })        
                     }
                     return done(null,authenticatedUser)
                 } catch (error) {
@@ -136,7 +148,18 @@ export const initPassport=()=>{
     })
 
     passport.deserializeUser(async(id,done)=>{
-        let user=await sessionsManager.getUserByFilter({_id:id})
+        let user;
+        if(id==='adminId'){
+            user={            
+                _id:'adminId',
+                nombre:'Manager Session',
+                email:"adminCoder@coder.com",
+                rol:'admin',
+                cart: 'No Aplica'                
+            }
+        }else{
+            user=await sessionsManager.getUserByFilter({_id:id})
+        }       
         return done(null,user)
     })
 
