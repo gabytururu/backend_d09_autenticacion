@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import path from 'path';
 import sessions from 'express-session';
+import dotenv from 'dotenv';
 import {router as productsRouter} from './routes/productsRouter.js'
 import {router as cartsRouter} from './routes/cartsRouter.js'
 import {router as vistasRouter} from './routes/vistasRouter.js'
@@ -15,6 +16,7 @@ import passport from 'passport'
 import { initPassport } from './config/passport.config.js'; 
 
 const PORT = 8080;
+dotenv.config();
 const app = express();
 
 app.use(express.json());
@@ -25,7 +27,8 @@ app.use(sessions({
     saveUninitialized: true,
     store:MongoStore.create({
         ttl:3600,
-        mongoUrl: "mongodb+srv://gabriela:wO2Mjvm7zojeyD7T@cluster0testgaby.l3ofz0y.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0TestGaby",
+        // mongoUrl: "mongodb+srv://gabriela:wO2Mjvm7zojeyD7T@cluster0testgaby.l3ofz0y.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0TestGaby",
+        mongoUrl: process.env.MONGO_URL,
         dbName:'ecommerce',
         collectionName:'browserSessions'
     })
@@ -55,7 +58,8 @@ const server= app.listen(PORT, ()=>{
 const dbConnection = async()=>{
     try{
         await mongoose.connect(
-            "mongodb+srv://gabriela:wO2Mjvm7zojeyD7T@cluster0testgaby.l3ofz0y.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0TestGaby",
+            // "mongodb+srv://gabriela:wO2Mjvm7zojeyD7T@cluster0testgaby.l3ofz0y.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0TestGaby",
+            process.env.MONGO_URL,
             {
                 dbName: "ecommerce"
             }

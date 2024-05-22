@@ -7,8 +7,8 @@ import passport from "passport";
 
 export const router=Router();
 
-const sessionsManager = new SessionsManager()
-const cartManager = new CartManager()
+// const sessionsManager = new SessionsManager()
+// const cartManager = new CartManager()
 
 router.post('/registro',passport.authenticate("registro",{failureMessage:true,failureRedirect:"/api/sessions/error"}),async(req,res)=>{
     let {web} = req.body

@@ -1,6 +1,7 @@
 import passport from "passport";
 import local from "passport-local";
 import github from "passport-github2";
+import dotenv from "dotenv";
 import { SessionsManagerMONGO as SessionsManager} from "../dao/sessionsManagerMONGO.js";
 import { CartManagerMONGO as CartManager } from "../dao/cartManagerMONGO.js";
 import { hashPassword, validatePassword } from "../utils.js";
@@ -105,9 +106,9 @@ export const initPassport=()=>{
         "github",
         new github.Strategy(
             {
-                clientID:"Iv23liYmzZNCNPJHlieH",
-                clientSecret:"d85809b557621684be429d6d28b41ea5e5fb3870",
-                callbackURL:"http://localhost:8080/api/sessions/callbackGithub"
+                clientID: process.env.GITHUB_CLIENT_ID,
+                clientSecret: process.env.GITHUB_CLIENT_SECRET,
+                callbackURL: process.env.GITHUB_CALLBACK_URL
             },
             async(accessToken,refreshToken,profile,done)=>{
                 try {
@@ -116,11 +117,10 @@ export const initPassport=()=>{
                     let authenticatedUser = await sessionsManager.getUserByFilter({email})
                     if(!authenticatedUser){
                         const newCart= await cartManager.createCart()
-                        console.log('new cart was created: ',newCart)
                         authenticatedUser=await sessionsManager.createUser({
                             nombre,email,cart:newCart._id,profile
                         })
-                        console.log('new authenticated user being sent: ',authenticatedUser)
+        
                     }
                     return done(null,authenticatedUser)
                 } catch (error) {
