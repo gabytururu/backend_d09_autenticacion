@@ -66,6 +66,11 @@ router.get('/logout', async(req,res)=>{
         }
     })
 
+    const acceptHeader = req.headers['accept']
+    if(acceptHeader.includes('text/html')){
+        return res.status(301).redirect('/logout')
+    }
+
     res.setHeader('Content-type', 'application/json');
     return res.status(200).json({payload:'Logout Exitoso'})
 })
@@ -81,13 +86,12 @@ router.get('/error',(req,res)=>{
 router.get('/github',passport.authenticate("github",{}),(req,res)=>{})
 
 router.get('/callbackGithub',passport.authenticate("github",{failureMessage:true,failureRedirect:"/api/sessions/error"}),(req,res)=>{
-    const {web} = req.body
     const githubAuthenticatedUser = {...req.user}
     delete githubAuthenticatedUser.profile
     req.session.user = req.user
 
-    if(web){
-        console.log('si viene de la web el pedido')
+    const acceptHeader = req.headers['accept']
+    if(acceptHeader.includes('text/html')){
         return res.status(301).redirect('/products')
     }
 

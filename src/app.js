@@ -10,10 +10,9 @@ import { messagesModel } from './dao/models/messagesModel.js';
 import { engine } from 'express-handlebars';
 import { Server } from 'socket.io';
 import __dirname from './utils.js';
-// import {generateDynamicSessionSecret} from './utils.js'
 import MongoStore from 'connect-mongo';
 import passport from 'passport'
-import { initPassport } from './config/passport.config.js'; // esta es la funcion q genero en passport.config.js
+import { initPassport } from './config/passport.config.js'; 
 
 const PORT = 8080;
 const app = express();
@@ -21,7 +20,6 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(sessions({
-    //secret: generateDynamicSessionSecret(),
     secret: 'cookieSecretSignature123?_?',
     resave:true,
     saveUninitialized: true,

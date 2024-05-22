@@ -134,9 +134,13 @@ router.get('/login',authUserIsLogged, async(req,res)=>{
 
 router.get('/perfil',auth, async(req,res)=>{
     res.setHeader('Content-type', 'text/html');
-    console.log('aca va el req.session.user en vistas/perfil:',req.session.user)
     res.status(200).render('perfil',{
         user:req.session.user
     })
+})
+
+router.get('/logout', async(req,res)=>{
+    res.setHeader('Content-type', 'text/html');
+    res.status(200).render('logout')
 })
 
