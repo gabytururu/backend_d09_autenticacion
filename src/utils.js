@@ -13,7 +13,8 @@ export const validatePassword = (password, hashPassword) =>bcrypt.compareSync(pa
 
 
 
-export const generateDynamicSessionSecret =()=> {
-  const dynamicSessionSecret= crypto.randomBytes(32).toString('hex');
-  return dynamicSessionSecret
-}
+// export const generateDynamicSessionSecret =()=> {
+//   const dynamicSessionSecret= crypto.randomBytes(32).toString('hex');
+//   return dynamicSessionSecret
+// }
+
